@@ -1,0 +1,34 @@
+root_dir="bin"
+main_file="main.dart"
+target_out_file="baget"
+out_dir="build"
+build_command="dart compile exe"
+
+dart_out="$(echo "$main_file" | sed 's|.dart|.exe|g')"
+
+function build() {
+    local main="$root_dir/$main_file"
+    local out="$out_dir/$target_out_file"
+
+    clean && \
+    $build_command "$main" && \
+    mkdir -p "$out_dir" && \
+    mv "$root_dir/$dart_out" "$out" && \
+    echo "Executable file $out"
+    return 0 || return 1    
+}
+
+function clean() {
+    rm -rf "$out_dir"
+}
+
+function run() {
+    local target="$out_dir/$target_out_file"
+    local flag="$1"
+
+    if [[ ! -f "$target" ]] || [[ "$flag" == "-r" ]]; then
+        build && clear && "$target" && return 0 || return 1        
+    fi
+
+    clear && "$target" && return 0 || return 1
+}   
